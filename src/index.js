@@ -52,10 +52,11 @@ class Game extends React.Component {
         this.state = {
             history: [{
                 squares: Array(9).fill(null),
-                position: null
+                position: null,
             }],
             stepNumber: 0,
             xIsNext: true,
+            selected: null,
         };
     }
 
@@ -74,6 +75,7 @@ class Game extends React.Component {
             }]),
             xIsNext: !this.state.xIsNext,
             stepNumber: history.length,
+            selected: null,
         });
     }
 
@@ -81,6 +83,7 @@ class Game extends React.Component {
         this.setState({
             stepNumber: step,
             xIsNext: (step % 2) === 0,
+            selected: step,
         });
     }
 
@@ -96,9 +99,12 @@ class Game extends React.Component {
             const column = step.position % 3;
             const row = Math.floor(step.position / 3);
             desc += step.position != null ? ' (' + column + ', ' + row + ')' : '';
+            const descClass = this.state.selected === move ? 'selected-move' : null;
             return (
                 <li key={move}>
-                    <button onClick={() => this.jumpTo(move)}>{desc}</button>
+                    <button onClick={() => this.jumpTo(move)}>
+                        <span className={descClass}>{desc}</span>
+                    </button>
                 </li>
             );
         });
