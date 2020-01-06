@@ -50,6 +50,7 @@ class Game extends React.Component {
             stepNumber: 0,
             xIsNext: true,
             selected: null,
+            sortHistoryDesc: false,
         };
     }
 
@@ -80,23 +81,35 @@ class Game extends React.Component {
         });
     }
 
+    handleSortButtonClick() {
+        this.setState({
+            sortHistoryDesc: !this.state.sortHistoryDesc,
+        })
+    }
+
     render() {
-        const history = this.state.history;
+        let history = this.state.history;
         const current = history[this.state.stepNumber];
         const winner = calculateWinner(current.squares);
 
+        if (this.state.sortHistoryDesc) {
+            history = history.slice(0).reverse();
+        }
         const moves = history.map((step, move) => {
-            let desc = move ?
+            if (this.state.sortHistoryDesc) {
+                move = history.length - 1 - move;
+            }
+            let description = move ?
                 'Go to move #' + move :
                 'Go to game start';
             const column = step.position % 3;
             const row = Math.floor(step.position / 3);
-            desc += step.position != null ? ' (' + column + ', ' + row + ')' : '';
-            const descClass = this.state.selected === move ? 'selected-move' : null;
+            description += step.position != null ? ' (' + column + ', ' + row + ')' : '';
+            const descriptionClass = this.state.selected === move ? 'selected-move' : null;
             return (
                 <li key={move}>
                     <button onClick={() => this.jumpTo(move)}>
-                        <span className={descClass}>{desc}</span>
+                        <span className={descriptionClass}>{description}</span>
                     </button>
                 </li>
             );
@@ -119,6 +132,12 @@ class Game extends React.Component {
                 <div className="game-info">
                     <div>{status}</div>
                     <ol>{moves}</ol>
+                </div>
+                <div>
+                    History sort order:
+                    <button onClick={() => this.handleSortButtonClick()}>
+                        {this.state.sortHistoryDesc ? 'asc' : 'desc'}
+                    </button>
                 </div>
             </div>
         );
